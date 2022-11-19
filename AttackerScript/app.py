@@ -36,27 +36,28 @@ def build_altered_token(token):
 
 def attack(token):
     choice = randint(0,2)
-    if choice == 0: # attack without a token
-        status_code=requests.get('http://localhost:5000/paciente/1').status_code
-        attack_type="Not Token Attack"
-        logging.basicConfig(filename='log_attacker.txt', filemode='w', format='{} - Status code: {} - Token : - '.format(attack_type, status_code))
-        return {"Type": attack_type, "Token used": "", "Status code": status_code}
-    
-    if choice == 1: # attack with a random token
-        random_token = build_token()
-        headers = {"Authorization": "Bearer " + build_token()}
-        attack_type="Random Token Attack"
-        status_code=requests.get('http://localhost:5000/paciente/1', headers=headers).status_code
-        logging.basicConfig(filename='log_attacker.txt', filemode='w', format='{} - Status code: {} - Token :{}'.format(attack_type, status_code, random_token))
-        return {"Type":attack_type, "Token used": random_token, "Status code": status_code}
-    
-    if choice == 2: # attack using an altered token
-        altered_token = build_altered_token(token)
-        headers = {"Authorization": "Bearer " + altered_token}
-        attack_type="Altered Token Attack"
-        status_code=requests.get('http://localhost:5000/paciente/1', headers=headers).status_code
-        logging.basicConfig(filename='log_attacker.txt', filemode='w', format='{} - Status code: {} - Token :{}'.format(attack_type, status_code, altered_token))
-        return {"Type": attack_type, "Token used" : altered_token, "Status code":status_code }
+    with open('log_attacker.txt', 'w') as log_file:
+        if choice == 0: # attack without a token
+            status_code=requests.get('http://localhost:5000/paciente/1').status_code
+            attack_type="Not Token Attack"
+            log_file.writelines('{} - Status code: {} - Token: - '.format(attack_type, status_code))  
+            return {"Type": attack_type, "Token used": "", "Status code": status_code}
+        
+        if choice == 1: # attack with a random token
+            random_token = build_token()
+            headers = {"Authorization": "Bearer " + build_token()}
+            attack_type="Random Token Attack"
+            status_code=requests.get('http://localhost:5000/paciente/1', headers=headers).status_code
+            log_file.writelines('{} - Status code: {} - Token:{}'.format(attack_type, status_code, random_token))  
+            return {"Type":attack_type, "Token used": random_token, "Status code": status_code}
+        
+        if choice == 2: # attack using an altered token
+            altered_token = build_altered_token(token)
+            headers = {"Authorization": "Bearer " + altered_token}
+            attack_type="Altered Token Attack"
+            status_code=requests.get('http://localhost:5000/paciente/1', headers=headers).status_code
+            log_file.writelines('{} - Status code: {} - Token: {}'.format(attack_type, status_code, altered_token))  
+            return {"Type": attack_type, "Token used" : altered_token, "Status code":status_code }
         
 
 def correct_request(token):
