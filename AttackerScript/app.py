@@ -75,24 +75,23 @@ if __name__ == '__main__':
     successful_attack_count = 0
     iter = 1
     print("Correct token:", correct_token)
-    while attack_count < 100:
-        possible_attack = random() < attack_probability
-        if possible_attack:
-            attack_count = attack_count + 1
-            attack_info =  attack(correct_token)
-            with open('log_attacker.txt', 'w', encoding='utf-8') as log_file:
-                log_file.writelines('TimeStamp: {} - {} - Status code: {} - Token:{}'.format(datetime.now(),
-                                                                                             attack_info["Type"],
-                                                                                             attack_info["Status code"], 
-                                                                                             attack_info["Token used"]))  
-                log_file.close() 
-            success = attack_info["Status code"] == 200
-            if success:
-                successful_attack_count = successful_attack_count + 1
-            print(str(iter) + ")", f"Attack({attack_count}) -> Attack Info: {attack_info} -> {'Passed' if success else 'Not passed'}")
-        else:
-            print(str(iter)+ ")", "Correct Request -> Responce:",correct_request(correct_token))
-        iter = iter + 1 
+    with open('log_attacker.txt', 'w', encoding='utf-8') as log_file:
+        while attack_count < 100:
+            possible_attack = random() < attack_probability
+            if possible_attack:
+                attack_count = attack_count + 1
+                attack_info =  attack(correct_token)
+                log_file.writelines('TimeStamp: {} - {} - Status code: {} - Token: {}\n'.format(datetime.now(),
+                                                                                                attack_info["Type"],
+                                                                                                attack_info["Status code"], 
+                                                                                                attack_info["Token used"]))  
+                success = attack_info["Status code"] == 200
+                if success:
+                    successful_attack_count = successful_attack_count + 1
+                print(str(iter) + ")", f"Attack({attack_count}) -> Attack Info: {attack_info} -> {'Passed' if success else 'Not passed'}")
+            else:
+                print(str(iter)+ ")", "Correct Request -> Responce:",correct_request(correct_token))
+            iter = iter + 1 
 
     print("Execution ended.")
     print("Successfull attacks: ", successful_attack_count)
