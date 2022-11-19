@@ -24,7 +24,7 @@ class VistaLogIn(Resource):
                                        Paciente.contrasena == request.json["contrasena"]).first()
             db.session.commit()
             if paciente is None:
-                return "El paciente no existe", 404
+                return {'mensaje':"El paciente no existe"}, 404
             else:
                 token_de_acceso = create_access_token(identity=paciente.id)
                 return {"mensaje": "Inicio de sesión exitoso", "token": token_de_acceso, "id_paciente":paciente.id}
@@ -33,17 +33,21 @@ class VistaLogIn(Resource):
 class VistaSignIn(Resource):
 
     def post(self):
+        logging.basicConfig(filename='log.txt', filemode='w', format='%(name)s - %(levelname)s - %(message)s')
+        logging.info('Signin fue exitoso')
         nuevo_paciente = Paciente(nombre=request.json["nombre"], contrasena=request.json["contrasena"])
         token_de_acceso= create_access_token(identity=request.json['nombre'])
         db.session.add(nuevo_paciente)
         db.session.commit()
-        return {'mensaje':f'paciente {nuevo_paciente.nombre} creado exitosamente', 'token de acceso':token_de_acceso}
+        return {'mensaje':f'paciente {nuevo_paciente.nombre} creado exitosamente', 'token':token_de_acceso, 'id':nuevo_paciente.id}
 
 
 class VistaPaciente(Resource):
 
     @jwt_required()
     def put(self, id_paciente):
+        logging.basicConfig(filename='log.txt', filemode='w', format='%(name)s - %(levelname)s - %(message)s')
+        logging.info('PACIENTE ID: {} editado'.format(id_paciente))
         paciente = Paciente.query.get_or_404(id_paciente)
         paciente.nombre = request.json.get("nombre",paciente.nombre)
         paciente.contrasena = request.json.get("contrasena",paciente.contrasena)
@@ -52,6 +56,8 @@ class VistaPaciente(Resource):
 
     @jwt_required()
     def get(self,id_paciente):
+        logging.basicConfig(filename='log.txt', filemode='w', format='%(name)s - %(levelname)s - %(message)s')
+        logging.info('PACIENTE ID: {} accesado'.format(id_paciente))        
         paciente = Paciente.query.get_or_404(id_paciente)
         return paciente_schema.dump(paciente)
 
@@ -59,6 +65,8 @@ class VistaTratamientoPaciente(Resource):
 
     @jwt_required()
     def post(self, id_paciente):
+        logging.basicConfig(filename='log.txt', filemode='w', format='%(name)s - %(levelname)s - %(message)s')
+        logging.info('PACIENTE ID: {} tratamiento agregado'.format(id_paciente))    
         nuevo_tratamiento = Tratamiento(tratamiento=request.json["tratamiento"])
         paciente = Paciente.query.get_or_404(id_paciente)
         paciente.tratamientos.append(nuevo_tratamiento)
@@ -68,4 +76,4 @@ class VistaTratamientoPaciente(Resource):
             db.session.rollback()
             return 'Nombre de tratamiento existente',409
 
-        return tratamiento_schema.dump(nuevo_tratamiento)
+        return {'mensaje':tratamiento_schema.dump(nuevo_tratamiento)}
