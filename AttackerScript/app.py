@@ -2,6 +2,7 @@ import requests
 import logging
 from random import randint, random
 import json
+from datetime import datetime
 
 def random_character():
     return random_character.choices[randint(0, random_character.size)]
@@ -40,19 +41,13 @@ def attack(token):
     if choice == 0: # attack without a token
         status_code=requests.get('http://localhost:5000/paciente/1').status_code
         attack_type="Not Token Attack"
-        with open('log_attacker.txt', 'w',encoding='utf-8') as log_file:
-            log_file.write('{} - Status code: {} - Token: - '.format(attack_type, status_code)) 
-            log_file.close() 
-        return {"Type": attack_type, "Token used": "", "Status code": status_code}
+        return {"Type": attack_type, "Token used": "-", "Status code": status_code}
     
     if choice == 1: # attack with a random token
         random_token = build_token()
         headers = {"Authorization": "Bearer " + build_token()}
         attack_type="Random Token Attack"
         status_code=requests.get('http://localhost:5000/paciente/1', headers=headers).status_code
-        with open('log_attacker.txt', 'w', encoding='utf-8') as log_file:
-            log_file.write('{} - Status code: {} - Token:{}'.format(attack_type, status_code, random_token))  
-            log_file.close() 
         return {"Type":attack_type, "Token used": random_token, "Status code": status_code}
     
     if choice == 2: # attack using an altered token
@@ -60,9 +55,6 @@ def attack(token):
         headers = {"Authorization": "Bearer " + altered_token}
         attack_type="Altered Token Attack"
         status_code=requests.get('http://localhost:5000/paciente/1', headers=headers).status_code
-        with open('log_attacker.txt', 'w', encoding='utf-8') as log_file:
-            log_file.write('{} - Status code: {} - Token: {}'.format(attack_type, status_code, altered_token))
-            log_file.close()  
         return {"Type": attack_type, "Token used" : altered_token, "Status code":status_code }
         
 
@@ -88,6 +80,12 @@ if __name__ == '__main__':
         if possible_attack:
             attack_count = attack_count + 1
             attack_info =  attack(correct_token)
+            with open('log_attacker.txt', 'w', encoding='utf-8') as log_file:
+                log_file.writelines('TimeStamp: {} - {} - Status code: {} - Token:{}'.format(datetime.now(),
+                                                                                             attack_info["Type"],
+                                                                                             attack_info["Status code"], 
+                                                                                             attack_info["Token used"]))  
+                log_file.close() 
             success = attack_info["Status code"] == 200
             if success:
                 successful_attack_count = successful_attack_count + 1
