@@ -18,7 +18,7 @@ class VistaPacientes(Resource):
 
 class VistaLogIn(Resource):
     def post(self):
-            logging.basicConfig(filename='log.txt', filemode='w', format='%(name)s - %(levelname)s - %(message)s')
+            logging.basicConfig(filename='log_gateway.txt', filemode='w', format='%(name)s - %(levelname)s - %(message)s')
             logging.info('Inicio de sesion fue exitoso')
             paciente = Paciente.query.filter(Paciente.nombre == request.json["nombre"],
                                        Paciente.contrasena == request.json["contrasena"]).first()
@@ -33,7 +33,7 @@ class VistaLogIn(Resource):
 class VistaSignIn(Resource):
 
     def post(self):
-        logging.basicConfig(filename='log.txt', filemode='w', format='%(name)s - %(levelname)s - %(message)s')
+        logging.basicConfig(filename='log_gateway.txt', filemode='w', format='%(name)s - %(levelname)s - %(message)s')
         logging.info('Signin fue exitoso')
         nuevo_paciente = Paciente(nombre=request.json["nombre"], contrasena=request.json["contrasena"])
         token_de_acceso= create_access_token(identity=request.json['nombre'])
@@ -46,7 +46,7 @@ class VistaPaciente(Resource):
 
     @jwt_required()
     def put(self, id_paciente):
-        logging.basicConfig(filename='log.txt', filemode='w', format='%(name)s - %(levelname)s - %(message)s')
+        logging.basicConfig(filename='log_gateway.txt', filemode='w', format='%(name)s - %(levelname)s - %(message)s')
         logging.info('PACIENTE ID: {} editado'.format(id_paciente))
         paciente = Paciente.query.get_or_404(id_paciente)
         paciente.nombre = request.json.get("nombre",paciente.nombre)
@@ -56,7 +56,7 @@ class VistaPaciente(Resource):
 
     @jwt_required()
     def get(self,id_paciente):
-        logging.basicConfig(filename='log.txt', filemode='w', format='%(name)s - %(levelname)s - %(message)s')
+        logging.basicConfig(filename='log_gateway.txt', filemode='w', format='%(name)s - %(levelname)s - %(message)s')
         logging.info('PACIENTE ID: {} accesado'.format(id_paciente))        
         paciente = Paciente.query.get_or_404(id_paciente)
         return paciente_schema.dump(paciente)
@@ -65,7 +65,7 @@ class VistaTratamientoPaciente(Resource):
 
     @jwt_required()
     def post(self, id_paciente):
-        logging.basicConfig(filename='log.txt', filemode='w', format='%(name)s - %(levelname)s - %(message)s')
+        logging.basicConfig(filename='log_gateway.txt', filemode='w', format='%(name)s - %(levelname)s - %(message)s')
         logging.info('PACIENTE ID: {} tratamiento agregado'.format(id_paciente))    
         nuevo_tratamiento = Tratamiento(tratamiento=request.json["tratamiento"])
         paciente = Paciente.query.get_or_404(id_paciente)
