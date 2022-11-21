@@ -40,7 +40,7 @@ def attack(token):
     
     if choice == 0: # attack without a token
         status_code=requests.get('http://localhost:5000/paciente/1').status_code
-        attack_type="Not Token Attack"
+        attack_type="Missing Token Attack"
         return {"Type": attack_type, "Token used": "-", "Status code": status_code}
     
     if choice == 1: # attack with a random token
