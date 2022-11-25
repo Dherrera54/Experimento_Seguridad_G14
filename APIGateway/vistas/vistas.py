@@ -1,5 +1,5 @@
 from flask_restful import Resource
-from ..modelos import db, Paciente, PacienteSchema, Tratamiento, TratamientoSchema
+from modelos.modelos import db, Paciente, PacienteSchema, Tratamiento, TratamientoSchema
 from flask import request
 from sqlalchemy.exc import IntegrityError
 from flask_jwt_extended import jwt_required , create_access_token
