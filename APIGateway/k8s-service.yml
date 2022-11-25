@@ -1,0 +1,46 @@
+# AGENDA APP
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: clinica-gateway-app
+  labels:
+    app: clinica-gateway-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: clinica-gateway-app
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: clinica-gateway-app
+    spec:
+      containers:
+        - name: clinica-gateway-app
+          image: #needs to be updated with GCP container registry image
+          ports:
+            - containerPort: 3000
+          imagePullPolicy: Always
+
+
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: service-clinica-gateway-app
+  annotations:
+    cloud.google.com/backend-config: '{"default": "clinica-gateway-backend-config"}'
+spec:
+  type: NodePort
+  selector:
+    app: clinica-gateway-app
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 3000
