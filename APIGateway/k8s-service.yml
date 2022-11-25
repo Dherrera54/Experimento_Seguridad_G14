@@ -1,4 +1,4 @@
-# AGENDA APP
+# APP
 
 apiVersion: apps/v1
 kind: Deployment
